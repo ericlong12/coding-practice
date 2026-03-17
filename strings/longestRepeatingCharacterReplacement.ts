@@ -1,40 +1,38 @@
 /**
  * Longest Repeating Character Replacement
  *
- * Pattern: Sliding Window (Maintain Max Frequency)
+ * Pattern: Sliding Window
  * Time: O(n)
  * Space: O(1)
  *
  * Notes:
- * The key insight is tracking the count of the most frequent
- * character inside the window. If window size - maxFrequency
- * exceeds k, the window is invalid and we shrink.
+ * Track the count of the most frequent character
+ * inside the window to determine validity.
  */
 
 export function longestRepeatingCharacterReplacement(
-  text: string,
+  s: string,
   k: number
 ): number {
-  const frequency: number[] = new Array(26).fill(0);
+  const freq: number[] = new Array(26).fill(0);
 
-  let windowStart = 0;
-  let maxFrequency = 0;
-  let bestLength = 0;
+  let left = 0;
+  let maxFreq = 0;
+  let best = 0;
 
-  for (let windowEnd = 0; windowEnd < text.length; windowEnd++) {
-    const index = text.charCodeAt(windowEnd) - 65;
-    frequency[index]++;
+  for (let right = 0; right < s.length; right++) {
+    const idx = s.charCodeAt(right) - 65;
+    freq[idx]++;
 
-    maxFrequency = Math.max(maxFrequency, frequency[index]);
+    maxFreq = Math.max(maxFreq, freq[idx]);
 
-    while (windowEnd - windowStart + 1 - maxFrequency > k) {
-      const startIndex = text.charCodeAt(windowStart) - 65;
-      frequency[startIndex]--;
-      windowStart++;
+    while (right - left + 1 - maxFreq > k) {
+      freq[s.charCodeAt(left) - 65]--;
+      left++;
     }
 
-    bestLength = Math.max(bestLength, windowEnd - windowStart + 1);
+    best = Math.max(best, right - left + 1);
   }
 
-  return bestLength;
+  return best;
 }
