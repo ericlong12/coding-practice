@@ -6,13 +6,23 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-TARGET_SLUG="$1"
+normalize() {
+  echo "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed 's/[-_ ]//g'
+}
 
-MATCHES="$(./scripts/solved-inventory.sh | while read -r file; do
-  if [ "$(basename "$file" .ts)" = "$TARGET_SLUG" ]; then
-    echo "$file"
-  fi
-done)"
+TARGET_SLUG="$(normalize "$1")"
+
+MATCHES="$(
+  ./scripts/solved-inventory.sh | while read -r file; do
+    base="$(basename "$file" .ts)"
+    normalized_base="$(normalize "$base")"
+    if [ "$normalized_base" = "$TARGET_SLUG" ]; then
+      echo "$file"
+    fi
+  done
+)"
 
 if [ -n "$MATCHES" ]; then
   echo "already solved:"
@@ -20,4 +30,4 @@ if [ -n "$MATCHES" ]; then
   exit 0
 fi
 
-echo "not found: $TARGET_SLUG"
+echo "not found: $1"
